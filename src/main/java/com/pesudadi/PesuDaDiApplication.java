@@ -1,4 +1,4 @@
-package com.pesudadi.pesudadi;
+package com.pesudadi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PesuDaDiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PesuDaDiApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(PesuDaDiApplication.class, args);
+    }
 }
