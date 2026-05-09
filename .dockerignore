@@ -1,0 +1,10 @@
+.git
+.gitignore
+.idea
+.vscode
+target
+node_modules
+dist
+README.md
+DESIGN.md
+PLAN.md
