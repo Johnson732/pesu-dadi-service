@@ -36,7 +36,7 @@ public class MatchmakingService {
         sessionService.updatePreferences(userSession.getSessionId(), request.gender(), request.ageRange());
 
         if (userSession.getCurrentRoomId() != null) {
-            closeRoomAndNotifyPartner(userSession.getCurrentRoomId(), userSession.getSessionId(), true);
+            closeRoomAndNotifyPartner(userSession.getCurrentRoomId(), userSession.getSessionId());
         } else {
             queueRepository.remove(userSession.getSessionId());
         }
@@ -82,7 +82,7 @@ public class MatchmakingService {
         queueRepository.remove(sessionId);
 
         if (userSession.getCurrentRoomId() != null) {
-            closeRoomAndNotifyPartner(userSession.getCurrentRoomId(), sessionId, false);
+            closeRoomAndNotifyPartner(userSession.getCurrentRoomId(), sessionId);
         }
 
         userSession.setStatus(SessionStatus.DISCONNECTED);
@@ -99,17 +99,12 @@ public class MatchmakingService {
         disconnect(sessionId);
     }
 
-    private void closeRoomAndNotifyPartner(String roomId, String initiatorSessionId, boolean requeuePartnerAsIdle) {
+    private void closeRoomAndNotifyPartner(String roomId, String initiatorSessionId) {
         String partnerSessionId = chatService.getPartnerSessionId(roomId, initiatorSessionId);
         chatService.endRoom(roomId);
 
         UserSession partner = sessionService.getSession(partnerSessionId);
-        if (requeuePartnerAsIdle) {
-            partner.setStatus(SessionStatus.IDLE);
-        } else {
-            partner.setStatus(SessionStatus.IDLE);
-        }
-
+        partner.setStatus(SessionStatus.IDLE);
         sendSessionEvent(partnerSessionId, "PARTNER_DISCONNECTED", SessionStatus.IDLE, null, "Your partner disconnected", null);
     }
 
