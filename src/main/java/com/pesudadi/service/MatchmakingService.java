@@ -91,11 +91,18 @@ public class MatchmakingService {
         return new SessionStateResponse(SessionStatus.DISCONNECTED);
     }
 
-    void handleUnexpectedDisconnect(String sessionId) {
+    synchronized void markConnected(String sessionId) {
+        UserSession userSession = sessionService.getSession(sessionId);
+        userSession.setConnected(true);
+    }
+
+    synchronized void handleUnexpectedDisconnect(String sessionId) {
         UserSession userSession = sessionService.getSession(sessionId);
         if (!userSession.isConnected() && userSession.getStatus() == SessionStatus.DISCONNECTED) {
             return;
         }
+
+        userSession.setConnected(false);
         disconnect(sessionId);
     }
 
