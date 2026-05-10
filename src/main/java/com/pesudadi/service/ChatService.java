@@ -2,6 +2,8 @@ package com.pesudadi.service;
 
 import com.pesudadi.dto.ChatMessageRequest;
 import com.pesudadi.dto.ChatMessageResponse;
+import com.pesudadi.dto.ChatTypingRequest;
+import com.pesudadi.dto.ChatTypingResponse;
 import com.pesudadi.exception.InvalidRequestException;
 import com.pesudadi.exception.ResourceNotFoundException;
 import com.pesudadi.model.ChatMessage;
@@ -49,6 +51,27 @@ public class ChatService {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + request.roomId(),
                 new ChatMessageResponse("CHAT_MESSAGE", message.roomId(), message.senderSessionId(), message.content(), message.timestamp())
+        );
+    }
+
+    public void sendTyping(ChatTypingRequest request) {
+        ChatRoom room = sessionService.getRoom(request.roomId());
+        if (!room.isActive()) {
+            throw new InvalidRequestException("Chat room is no longer active");
+        }
+        if (!room.includes(request.sessionId())) {
+            throw new InvalidRequestException("Session does not belong to the chat room");
+        }
+
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + request.roomId(),
+                new ChatTypingResponse(
+                        "TYPING",
+                        request.roomId(),
+                        request.sessionId(),
+                        request.typing(),
+                        Instant.now()
+                )
         );
     }
 
